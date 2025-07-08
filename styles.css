@@ -182,6 +182,9 @@ body {
     opacity: 0.9;
 }
 
+.name-short { display: none; }
+.name-full { display: inline; }
+
 .name {
     font-size: 3.2rem;
     font-weight: 700;
@@ -194,6 +197,14 @@ body {
     background-clip: text;
     text-transform: uppercase;
     letter-spacing: 2px;
+}
+
+@media (max-width: 500px) {
+    .name-short { display: inline; }
+    .name-full { display: none; }
+    .name {
+        font-size: 1.7rem;
+    }
 }
 
 .title-container {
@@ -628,7 +639,7 @@ body {
         text-align: center;
         width: 100%;
         white-space: nowrap;
-        font-size: 2.2rem;
+        font-size: 1.002rem;
     }
     
     .title-text {
