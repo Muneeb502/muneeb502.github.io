@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muneeb Ur Rehman - Data Scientist & AI Engineer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- Chatbot Widget Styles -->
+    <style>
+        /* Chatbot Widget Styles - Matched to website theme */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999999;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            animation: chatbotPulse 2s infinite;
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(255, 0, 0, 0.5);
+        }
+
+        @keyframes chatbotPulse {
+            0% { box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3); }
+            50% { box-shadow: 0 4px 20px rgba(255, 0, 0, 0.6); }
+            100% { box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3); }
+        }
+
+        .chatbot-toggle img {
+            width: 28px;
+            height: 28px;
+            filter: brightness(0) invert(1);
+        }
+
+        .chatbot-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: #1a1a1a;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(255, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            z-index: 999999;
+            border: 1px solid #333333;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-container.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .chatbot-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chatbot-header-title img {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0) invert(1);
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .chatbot-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #000000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chatbot-message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            animation: messageSlide 0.3s ease;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chatbot-message.user {
+            background: #ff0000;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+        }
+
+        .chatbot-message.bot {
+            background: #333333;
+            color: #ffffff;
+            align-self: flex-start;
+            border-bottom-left-radius: 6px;
+            border: 1px solid #666666;
+        }
+
+        .chatbot-message.typing {
+            background: #333333;
+            color: #cccccc;
+            align-self: flex-start;
+            border-bottom-left-radius: 6px;
+            border: 1px solid #666666;
+            font-style: italic;
+        }
+
+        .chatbot-input-container {
+            padding: 16px 20px;
+            background: #1a1a1a;
+            border-top: 1px solid #333333;
+        }
+
+        .chatbot-input-form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            border: 1px solid #666666;
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .chatbot-input:focus {
+            border-color: #ff0000;
+        }
+
+        .chatbot-input::placeholder {
+            color: #999999;
+        }
+
+        .chatbot-send {
+            background: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .chatbot-send:hover {
+            background: #cc0000;
+        }
+
+        .chatbot-send:disabled {
+            background: #666666;
+            cursor: not-allowed;
+        }
+
+        .chatbot-send svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .chatbot-container {
+                width: calc(100vw - 40px);
+                height: 60vh;
+                bottom: 80px;
+                right: 20px;
+                left: 20px;
+            }
+            
+            .chatbot-toggle {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .chatbot-toggle img {
+                width: 24px;
+                height: 24px;
+            }
+        }
+
+        /* Hide scrollbar for webkit browsers */
+        .chatbot-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background: #666666;
+            border-radius: 3px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb:hover {
+            background: #999999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">Muneeb Ur Rehman</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#skills" class="nav-link">Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#projects" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#certification" class="nav-link">Certification</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">Contact</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="greeting">Hello,</h1>
+                    <h2 class="intro">I am</h2>
+                    <h3 class="name">
+                        <span class="name-full">Muneeb Ur Rehman</span>
+                        <span class="name-short">Muneeb</span>
+                    </h3>
+                    <div class="title-container">
+                        <span class="title-text" id="titleText">Data Scientist</span>
+                    </div>
+                    <div class="skills-loop">
+                        <span class="skill-item" id="skillText">Data Science</span>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="image-container">
+                        <div class="profile-image">
+                            <img src="muneeb.jpeg" alt="Muneeb Ur Rehman" class="profile-photo">
+                        </div>
+                        <div class="image-glow"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>I am a passionate Data Scientist and AI Engineer with expertise in machine learning, deep learning, and generative AI. I specialize in building intelligent systems that solve real-world problems.</p>
+                    <p>With a strong foundation in mathematics and programming, I create innovative solutions using cutting-edge AI technologies.</p>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-number">20+</span>
+                            <span class="stat-label">Projects</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">1+</span>
+                            <span class="stat-label">Years Experience</span>
+                        </div>
+                        <!-- <div class="stat-item">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Success Rate</span>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2 class="section-title">Skills & Expertise</h2>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <div class="skill-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Data Science</h3>
+                    <p>Statistical analysis, data visualization, and predictive modeling</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Machine Learning</h3>
+                    <p>Supervised and unsupervised learning algorithms</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3>Deep Learning</h3>
+                    <p>Neural networks, CNN, RNN, and transformer models</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3>Generative AI</h3>
+                    <p>GANs, VAEs, and large language models</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Agentic AI</h3>
+                    <p>Autonomous agents and multi-agent systems</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">Featured Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-image">
+                        <div class="project-placeholder">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>AI-Powered Analytics Platform</h3>
+                        <p>Advanced analytics platform using machine learning for business intelligence</p>
+                        <div class="project-tech">
+                            <span>Python</span>
+                            <span>TensorFlow</span>
+                            <span>React</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">
+                        <div class="project-placeholder">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Deep Learning Model</h3>
+                        <p>Computer vision model for object detection and classification</p>
+                        <div class="project-tech">
+                            <span>PyTorch</span>
+                            <span>OpenCV</span>
+                            <span>Docker</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">
+                        <div class="project-placeholder">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3>AI Chatbot</h3>
+                        <p>Intelligent conversational agent using NLP and generative AI</p>
+                        <div class="project-tech">
+                            <span>GPT</span>
+                            <span>FastAPI</span>
+                            <span>MongoDB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certification Section -->
+    <section id="certification" class="certification">
+        <div class="container">
+            <h2 class="section-title">Certifications</h2>
+            <div class="cert-grid">
+                <div class="cert-card">
+                    <img src="aieng.png" alt="AI Engineer Certification" class="cert-img" />
+                    <div class="cert-desc">Certified Professional AI Engineer </div>
+                </div>
+                <div class="cert-card">
+                    <img src="python_ds.jpg" alt="Certified Data Science Professional" class="cert-img" />
+                    <div class="cert-desc">Python for  Data Science and  AI & Development</div>
+                </div>
+                <div class="cert-card">
+                    <img src="google_e.jpg" alt="Certified Deep Learning Specialist" class="cert-img" />
+                    <div class="cert-desc">Google AI Essentials</div>
+                </div>
+                <div class="cert-card">
+                    <img src="Da.jpg" alt="Certified Machine Learning Expert" class="cert-img" />
+                    <div class="cert-desc">Data Analysis and Presentation Building</div>
+                </div>
+                <div class="cert-card">
+                    <img src="prompt.png" alt="Certified Neural Network Practitioner" class="cert-img" />
+                    <div class="cert-desc">Certified Writing Prompts</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fab fa-whatsapp"></i>
+                        <a href="https://wa.me/923061619009" target="_blank">+92 3061619009</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:mu0476080@gmail.com">mu0476080@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-linkedin"></i>
+                        <a href="https://www.linkedin.com/in/muneeb-ur-rehman-99580b277" target="_blank">Muneeb Ur Rehman</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-github"></i>
+                        <a href="https://github.com/Muneeb502" target="_blank">Muneeb502</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Muneeb Ur Rehman. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+    <!-- Chatbot Widget HTML -->
+    <div class="chatbot-widget">
+        <!-- Toggle Button -->
+        <button class="chatbot-toggle" id="chatbotToggle" title="Chat with Muneeb AI Assistant">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Chat">
+        </button>
+
+        <!-- Chat Container -->
+        <div class="chatbot-container" id="chatbotContainer">
+            <div class="chatbot-header">
+                <div class="chatbot-header-title">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Chat">
+                    Muneeb ur Rehman AI Assistant
+                </div>
+                <button class="chatbot-close" id="chatbotClose" title="Close">×</button>
+            </div>
+
+            <div class="chatbot-messages" id="chatbotMessages">
+                <!-- Messages will be added here dynamically -->
+            </div>
+
+            <div class="chatbot-input-container">
+                <form class="chatbot-input-form" id="chatbotForm">
+                    <input 
+                        type="text" 
+                        class="chatbot-input" 
+                        id="chatbotInput" 
+                        placeholder="Type your message..." 
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="submit" class="chatbot-send" id="chatbotSend">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chatbot Widget JavaScript
+        class ChatbotWidget {
+            constructor() {
+                this.isOpen = false;
+                this.chatHistory = [];
+                this.isLoading = false;
+                
+                // DOM elements
+                this.toggle = document.getElementById('chatbotToggle');
+                this.container = document.getElementById('chatbotContainer');
+                this.close = document.getElementById('chatbotClose');
+                this.messages = document.getElementById('chatbotMessages');
+                this.form = document.getElementById('chatbotForm');
+                this.input = document.getElementById('chatbotInput');
+                this.send = document.getElementById('chatbotSend');
+                
+                // API endpoint (connecting to your FastAPI on localhost)
+                this.apiUrl = 'http://localhost:8000/chat';
+                
+                this.init();
+            }
+            
+            init() {
+                // Event listeners
+                this.toggle.addEventListener('click', () => this.toggleChat());
+                this.close.addEventListener('click', () => this.closeChat());
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                
+                // Close on escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.isOpen) {
+                        this.closeChat();
+                    }
+                });
+                
+                // Add welcome message
+                this.addMessage('bot', 'Hello! I\'m Muneeb AI Assistant. How can I help you today?');
+            }
+            
+            toggleChat() {
+                if (this.isOpen) {
+                    this.closeChat();
+                } else {
+                    this.openChat();
+                }
+            }
+            
+            openChat() {
+                this.isOpen = true;
+                this.container.classList.add('active');
+                this.input.focus();
+            }
+            
+            closeChat() {
+                this.isOpen = false;
+                this.container.classList.remove('active');
+            }
+            
+            addMessage(role, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chatbot-message ${role}`;
+                messageDiv.textContent = content;
+                
+                this.messages.appendChild(messageDiv);
+                this.messages.scrollTop = this.messages.scrollHeight;
+                
+                // Add to chat history
+                this.chatHistory.push({ role, content });
+            }
+            
+            addTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'chatbot-message bot typing';
+                typingDiv.textContent = 'Typing...';
+                typingDiv.id = 'typing-indicator';
+                
+                this.messages.appendChild(typingDiv);
+                this.messages.scrollTop = this.messages.scrollHeight;
+            }
+            
+            removeTypingIndicator() {
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+            
+            async handleSubmit(e) {
+                e.preventDefault();
+                
+                const message = this.input.value.trim();
+                if (!message || this.isLoading) return;
+                
+                // Clear input
+                this.input.value = '';
+                
+                // Add user message
+                this.addMessage('user', message);
+                
+                // Show typing indicator
+                this.addTypingIndicator();
+                
+                // Disable input and send button
+                this.isLoading = true;
+                this.input.disabled = true;
+                this.send.disabled = true;
+                
+                try {
+                    // Send message to API
+                    const response = await fetch(this.apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            history: this.chatHistory.map(m => ({
+                                role: m.role,
+                                content: m.content
+                            }))
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Remove typing indicator
+                    this.removeTypingIndicator();
+                    
+                    // Add bot response
+                    this.addMessage('bot', data.response);
+                    
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    
+                    // Remove typing indicator
+                    this.removeTypingIndicator();
+                    
+                    // Add error message
+                    this.addMessage('bot', 'Sorry, I\'m having trouble connecting to the server. Please try again later.');
+                } finally {
+                    // Re-enable input and send button
+                    this.isLoading = false;
+                    this.input.disabled = false;
+                    this.send.disabled = false;
+                    this.input.focus();
+                }
+            }
+        }
+        
+        // Initialize chatbot when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new ChatbotWidget();
+        });
+    </script>
+</body>
+</html> 
